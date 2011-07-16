@@ -1,0 +1,27 @@
+# Use the glob syntax for all entries
+syntax: glob
+
+# User specific project file
+*.wpu
+
+# Compiled files
+*.pyc
+*.pyo
+
+# Cython build directories
+_pyxbld
+
+# Code coverage output
+*.cover
+
+# Profiling output
+profile_*.txt
+profile.*
+
+# Use the regexp syntax for the remaining entries
+syntax: regexp
+
+# Generated test files
+^tests/data/.*?\.html$
+^tests/data/[^_].*?\.py$
+^benchmarks/.*?\.pyx$

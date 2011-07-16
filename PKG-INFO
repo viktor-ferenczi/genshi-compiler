@@ -1,0 +1,25 @@
+Metadata-Version: 1.0
+Name: Genshi Compiler
+Version: 0.1.0
+Summary: Genshi XML template compiler
+Home-page: http://code.google.com/p/genshi-compiler
+Author: Viktor Ferenczi
+Author-email: viktor@ferenczi.eu
+License: MIT
+Description: Genshi Compiler allows for compiling simple Genshi XML templates
+             to pure Python code. You can render the whole template or any of
+             the template functions by importing generated code. The generated
+             code is typically ~40x faster than rendering the same via Genshi.
+             There is a cost of this speedup. Some of Genshi's dynamic
+             features are not available, most notably anything that depends
+             on a template loader (xi:include, xi:fallback), the XML element
+             tree representation (py:match) or the token stream (filters).
+Keywords: python genshi compiler codegeneration template performance
+Platform: UNKNOWN
+Classifier: Development Status :: 4 - Beta
+Classifier: Environment :: Web Environment
+Classifier: Intended Audience :: Developers
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Classifier: Topic :: Text Processing :: Markup :: HTML
+Classifier: Topic :: Text Processing :: Markup :: XML
