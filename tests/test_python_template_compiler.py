@@ -120,11 +120,11 @@ class PythonXMLTemplateCompilerTestCase(unittest.TestCase):
         # Write to file
         with open('data/%s.output.html' % basename, 'wt') as output_file:
             output_file.write(output.encode('utf-8'))
-        with open('data/%s.minimized-output.html' % basename, 'wt') as output_file:
+        with open('data/%s.minimized.output.html' % basename, 'wt') as output_file:
             output_file.write(minimized_output.encode('utf-8'))
-        with open('data/%s.genshi-output.html' % basename, 'wt') as output_file:
+        with open('data/%s.genshi.output.html' % basename, 'wt') as output_file:
             output_file.write(genshi_output.encode('utf-8'))
-        with open('data/%s.minimized-genshi-output.html' % basename, 'wt') as output_file:
+        with open('data/%s.minimized.genshi.output.html' % basename, 'wt') as output_file:
             output_file.write(minimized_genshi_output.encode('utf-8'))
             
         # Compare the results
