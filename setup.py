@@ -8,7 +8,7 @@ exec open('genshi_compiler/version.py')
 setuptools.setup(
     name='genshi_compiler',
     version=__release__,
-    description='Genshi XML template compiler',
+    description='Genshi template compiler',
     long_description='''\
 Genshi Compiler allows for compiling simple Genshi XML templates
 to pure Python code. You can render the whole template or any of
