@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
-Name: Genshi Compiler
-Version: 0.1.0
+Name: genshi_compiler
+Version: 0.1.1
 Summary: Genshi XML template compiler
 Home-page: http://code.google.com/p/genshi-compiler
 Author: Viktor Ferenczi

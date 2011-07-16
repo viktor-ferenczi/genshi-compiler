@@ -1,4 +1,6 @@
-Genshi Compiler: Genshi XML template to pure Python code compiler
+Genshi Compiler - Template compiler mostly compatible with Genshi's syntax
+
+Installation: python setup.py install
 
 Genshi Compiler allows for compiling simple Genshi XML templates
 to pure Python code. You can render the whole template or any of
@@ -9,97 +11,5 @@ features are not available, most notably anything that depends
 on a template loader (xi:include), the XML element tree
 representation (py:match) or the token stream (filters).
 
-Quick Tutorial
-
->>> import genshi_compiler
->>> from genshi_compiler import python_xml_template_compiler
->>> 
->>> xml_template = '''\
-... <html xmlns:py="http://genshi.edgewall.org/">
-...   <body>
-...     <table>
-...       <tr py:for="y in xrange(a, b)">
-...         <td py:for="x in xrange(16)" py:content="unichr(16 * y + x)" />
-...       </tr>
-...     </table>
-...   </body>
-... </html>'''
->>> 
->>> compiler = python_xml_template_compiler.PythonXMLTemplateCompiler()
->>> compiler.load(xml_template, 'character_table.html', 'character_table')
->>> module_source = compiler.compile('a, b')
->>> 
->>> module = types.ModuleType('character_table')
->>> module_source=module_source.rstrip()+'\n'
->>> exec module_source in module.__dict__
->>> 
->>> html = module.render(2, 8)
->>> type(html)
-<type 'unicode'>
->>> html = html.encode('utf-8')
->>> print html
-<html>
-<body>
-<table>
-<tr>
-<td></td>
-</tr>
-</table>
-</body>
-</html>
->>> 
->>> print module_source
-#!/usr/bin/python
-# -*- coding: ascii -*-
-
-""" Generated template rendering code based on the following Genshi
-XML template: character_table
-
-WARNING: This is automatically generated source code!
-WARNING: Do NOT modify this file by hand or YOUR CHANGES WILL BE LOST!
-
-Modify the character_table.html
-XML template file, then regenerate this module instead.
-
-"""
-
-import xml.sax.saxutils
-
-# Converts any object to unicode
-_x_to_text = unicode
-
-# XML escapes text
-_x_escape_text = xml.sax.saxutils.escape
-
-def _x_escape_attribute(value, quoteattr=xml.sax.saxutils.quoteattr):
-    """ Escapes a value to be usitable for double quoted XML attributes
-    """
-    return quoteattr("'" + value)[2: -1]
-
-def _x_format_attributes(_x_append_markup, attributes):
-    """ Emits attributes at runtime
-    """
-    global _x_escape_attribute
-
-    for attribute_name, attribute_value in attributes.iteritems():
-        if attribute_value is not None:
-            _x_append_markup(' %s="%s"' % (
-                attribute_name, _x_escape_attribute(attribute_value)))
-
-# Line #1: <html xmlns:py="http://genshi.edgewall.org/">
-def render(a, b):
-    
-    # Line #1: <html xmlns:py="http://genshi.edgewall.org/">
-    global _x_escape_text, _x_to_text
-    
-    _x_markup_fragments = []
-    _x_append_markup = _x_markup_fragments.append
-    
-    # Line #1
-    _x_append_markup(u'<html>\n<body>\n<table>\n<tr>\n<td></td>\n</tr>\n</table>\n</body>\n</html>')
-    
-    _x_html = ''.join(_x_markup_fragments)
-    return _x_html
-
->>> # Where are the for loops?!
->>> 
+Please see the project home page for more details:
+http://code.google.com/p/genshi-compiler/

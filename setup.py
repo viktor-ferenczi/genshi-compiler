@@ -6,7 +6,7 @@ __release__ = None
 exec open('genshi_compiler/version.py')
 
 setuptools.setup(
-    name='Genshi Compiler',
+    name='genshi_compiler',
     version=__release__,
     description='Genshi XML template compiler',
     long_description='''\
