@@ -1,0 +1,457 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:svg="http://www.w3.org/2000/svg">
+  
+<!--! Not supported: py:match -->
+
+<!--! Not supported: xi:include -->
+
+<!--! Not supported: xi:fallback -->
+
+<!--! Unit test for all the Genshi directives supported by the compiler -->
+
+<!--! Template comment -->
+<!-- !Another template <comment> -->
+<!-- Regular '&' "comment" -->
+<!-- Another <regular> comment -->
+
+<!--! Another XML namespace -->
+
+<!--! Non-ASCII characters -->
+
+<p>árvíztűrő tükörfúrógép ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP</p>
+
+<!--! Precedency tests -->
+
+<div py:choose="1">
+  <p py:when="1" py:for="x in xrange(3)" py:if="x == 2" py:choose="x" py:with="y=7">
+    <span py:when="2">
+      $y $x Hello!
+      $$ $$x $$1 $1
+    </span>
+  </p>
+</div>
+
+<div py:with="y=8" py:replace="y">
+  apple
+</div>
+
+<!--! Genshi does not seem to be able to handle py:content and py:replace on
+the same element. Genshi gives "121", while the compiled template results in
+"1" which is more correct. It is useless to mix these directives in practice
+anyway, so we're just ignoring this test for now. Since we're doing it all at
+rendering time, as it is more meaningful. Added as a new ticket for Genshi: 
+http://genshi.edgewall.org/ticket/436 -->
+<!--!
+<div py:with="x=1; y=2" py:content="y" py:replace="x">
+  apple
+</div>
+-->
+
+<ul>
+  <li py:with="foo={'class': 'collapse'}" py:attrs="foo" py:strip="True">Bar</li>
+</ul>
+
+<div>
+  <p py:def="greeting2(name)">
+    Hello, ${name}!
+  </p>
+<!-- ${greeting2('world')}
+  ${greeting2('everyone else')} -->
+</div>
+
+<div>
+  <p py:def="greeting3(name)" py:if="0">
+    Hello, ${name}!
+  </p>
+  ${greeting3('world')}
+  ${greeting3('everyone else')}
+</div>
+
+<!--! for in for test -->
+<table>
+  <tr py:for="y in xrange(2, 3)">
+    <td py:for="x in xrange(16)" py:content="unichr(16 * y + x)" />
+  </tr>
+</table>
+
+<div>
+  <svg:canvas svg:background="#000">
+    <svg:circle />
+  </svg:canvas>
+</div>
+
+<!--! XML entities -->
+&amp;
+&lt;
+&gt;
+&quot;
+&apos;
+
+<img title="&amp;&lt;&gt;&quot;&apos;" />
+
+<!--! HTML entities -->
+&nbsp;
+&copy;
+&frac12;
+&oacute;
+
+<!-- Normal comment, it is written to the output as is -->
+
+<div py:choose="">
+  <ul py:when="0" py:choose="">
+    <li py:when="0 == 1">00</li>
+    <li py:when="1 == 1">01</li>
+    <li py:otherwise="">02</li>
+  </ul>
+  <ul py:when="1" py:choose="">
+    <li py:when="0 == 1">10</li>
+    <li py:when="1 == 1">11</li>
+    <li py:otherwise="">12</li>
+  </ul>
+  <ul py:otherwise="" py:choose="">
+    <li py:when="0 == 1">20</li>
+    <li py:when="1 == 1">21</li>
+    <li py:otherwise="">22</li>
+  </ul>
+</div>
+<div py:choose="1">
+  <ul py:when="0" py:choose="10">
+    <li py:when="10">00</li>
+    <li py:when="11">01</li>
+    <li py:otherwise="">02</li>
+  </ul>
+  <ul py:when="1" py:choose="11">
+    <li py:when="10">10</li>
+    <li py:when="11">11</li>
+    <li py:otherwise="">12</li>
+  </ul>
+  <ul py:otherwise="" py:choose="12">
+    <li py:when="10">20</li>
+    <li py:when="11">21</li>
+    <li py:otherwise="">22</li>
+  </ul>
+</div>
+
+<div py:choose="">
+  <ul py:when="1 == 1" py:choose="">
+    <li py:when="1 == 1">1</li>
+  </ul>
+</div>
+<div py:choose="">
+  <ul py:when="1 == 1" py:choose="1">
+    <li py:when="1">1</li>
+  </ul>
+</div>
+<div py:choose="">
+  <ul py:when="1 == 1" py:choose="">
+    <li py:otherwise="">2</li>
+  </ul>
+</div>
+<div py:choose="">
+  <ul py:when="1 == 1" py:choose="1">
+    <li py:otherwise="">2</li>
+  </ul>
+</div>
+<div py:choose="">
+  <ul py:otherwise="" py:choose="">
+    <li py:when="1 == 1">1</li>
+  </ul>
+</div>
+<div py:choose="">
+  <ul py:otherwise="" py:choose="1">
+    <li py:when="1">1</li>
+  </ul>
+</div>
+<div py:choose="">
+  <ul py:otherwise="" py:choose="">
+    <li py:otherwise="">1</li>
+  </ul>
+</div>
+<div py:choose="">
+  <ul py:otherwise="" py:choose="1">
+    <li py:otherwise="1">1</li>
+  </ul>
+</div>
+
+<?python
+# It is a Python code block copied into the generated source code as is.
+# The compiler does not remove the common indentation, so such code blocks
+# must start at the first column. It might be improved in the future.
+if 1:
+    TESTING = 'just testing'
+else:
+    # Even the comments are copied, the indentation is preserved
+    pass
+?>
+
+<b>Testing markup</b>
+
+<a title="${'&amp;&lt;&gt;&quot;\&apos;'}">Attribute quoting test</a>
+
+<h1>Testing standalone directives</h1>
+
+<h2>Elements</h2>
+
+<py:def function="fn1(a=11, b=12, c='!&gt;&amp;&lt;!', d='&lt;br /&gt;')">
+  <b>$a</b>
+  <i>${b}</i>
+  ${c}
+  ${Markup(d)}
+</py:def>
+
+${fn1(1)}
+
+<py:for each="x in range(5)">${ x * x }
+</py:for>
+
+
+<py:if test="True">True</py:if>
+
+<py:if test="1">1</py:if>
+<py:if test="False">False</py:if>
+<py:if test="0">0</py:if>
+<py:if test="()">()</py:if>
+<py:if test="(0, )">(0, )</py:if>
+
+<py:choose test="1">
+  <py:when test="1">X</py:when>
+  <py:when test="2">Y</py:when>
+  <py:otherwise>ELSE</py:otherwise>
+</py:choose>
+<py:choose test="2">
+  <py:when test="1">X</py:when>
+  <py:when test="2">Y</py:when>
+  <py:otherwise>ELSE</py:otherwise>
+</py:choose>
+<py:choose test="3">
+  <py:when test="1">X</py:when>
+  <py:when test="2">Y</py:when>
+  <py:otherwise>ELSE</py:otherwise>
+</py:choose>
+<py:choose test="">
+  <py:when test="1">X</py:when>
+  <py:when test="0">Y</py:when>
+  <py:otherwise>ELSE</py:otherwise>
+</py:choose>
+<py:choose test="">
+  <py:when test="0">X</py:when>
+  <py:when test="1">Y</py:when>
+  <py:otherwise>ELSE</py:otherwise>
+</py:choose>
+<py:choose test="">
+  <py:when test="0">X</py:when>
+  <py:when test="0">Y</py:when>
+  <py:otherwise>ELSE</py:otherwise>
+</py:choose>
+
+<py:with vars="x=1; y=2">[$x]{$y}</py:with>
+
+<h2>Attributes</h2>
+
+<!-- py:strip -->
+<div>
+  <span py:strip="True"><p>Hello</p></span>
+</div>
+<div>
+  <span py:strip=""><p>Hello</p></span>
+</div>
+<div>
+  <span py:strip="False"><p>Hello</p></span>
+</div>
+
+<!-- py:attrs -->
+<div>
+  <div id="div1" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}">Hello</div>
+  <div id="div1" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}"> </div>
+  <div id="div1" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}"></div>
+  <div id="div1" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}" />
+</div>
+
+<!-- py:content -->
+<div>
+  <span py:content="0">Hello</span>
+  <span py:content="True"> </span>
+  <span py:content="None"></span>
+  <span py:content="'123'" />
+  <span py:content="Markup('&lt;hr /&gt;')" />
+  <span py:with="x=''">
+    <span py:content="x">Hello</span>
+  </span>
+</div>
+
+<!-- py:replace -->
+<div>
+  <span py:replace="0">Hello</span>
+  <span py:replace="True"> </span>
+  <span py:replace="None"></span>
+  <span py:replace="'123'" />
+  <span py:replace="Markup('&lt;hr /&gt;')" />
+</div>
+
+<!-- py:with -->
+<div>
+  <span py:with="x=1; y=2">[$x]{$y}</span>
+  <span py:with="x=1; y=2">{$x}[$y]</span>
+  <span py:with="x=1; y=2">[]{}</span>
+  <span py:with="x=1; y=2">{}[]</span>
+  <span py:with="x=1; y=2"> </span>
+  <span py:with="x=1; y=2"></span>
+  <span py:with="x=1; y=2" />
+</div>
+
+<!-- py:choose, py:when, py:otherwise -->
+<!-- py:choose #1 -->
+<div>
+  <div py:choose="1">
+    <span py:when="1">X</span>
+    <span py:when="2">Y</span>
+    <span py:when="3"> </span>
+    <span py:when="4"></span>
+    <span py:when="5" />
+    <span py:otherwise="">ELSE</span>
+  </div>
+</div>
+<!-- py:choose #2 -->
+<div>
+  <div py:choose="2">
+    <span py:when="1">X</span>
+    <span py:when="2">Y</span>
+    <span py:otherwise="">ELSE</span>
+  </div>
+</div>
+<!-- py:choose #3 -->
+<div>
+  <div py:choose="3">
+    <span py:when="1">X</span>
+    <span py:when="2">Y</span>
+    <span py:otherwise="">ELSE</span>
+  </div>
+</div>
+<!-- py:choose #4 -->
+<div>
+  <div py:choose="">
+    <span py:when="1">X</span>
+    <span py:when="2">Y</span>
+    <span py:otherwise="">ELSE</span>
+  </div>
+</div>
+<!-- py:choose #5 -->
+<div>
+  <div py:choose="">
+    <span py:when="0">X</span>
+    <span py:when="1">Y</span>
+    <span py:otherwise="">ELSE</span>
+  </div>
+</div>
+<!-- py:choose #6 -->
+<div>
+  <div py:choose="0">
+    <span py:when="0">X</span>
+    <span py:when="0">Y</span>
+    <span py:otherwise="">ELSE</span>
+  </div>
+</div>
+<!-- py:choose #7 -->
+<div>
+  <div py:choose="">
+    <span py:when="1">X</span>
+    <span py:when="1">Y</span>
+    <span py:otherwise="">ELSE</span>
+  </div>
+</div>
+<!-- py:choose #8 -->
+<div>
+  <div py:choose="3">
+    <span py:when="1">X</span>
+    <span py:when="2">Y</span>
+    <span py:when="3"> </span>
+    <span py:when="4"></span>
+    <span py:when="5" />
+    <span py:otherwise="">ELSE</span>
+  </div>
+</div>
+<!-- py:choose #9 -->
+<div>
+  <div py:choose="4">
+    <span py:when="1">X</span>
+    <span py:when="2">Y</span>
+    <span py:when="3"> </span>
+    <span py:when="4"></span>
+    <span py:when="5" />
+    <span py:otherwise="">ELSE</span>
+  </div>
+</div>
+<!-- py:choose #10 -->
+<div>
+  <div py:choose="5">
+    <span py:when="1">X</span>
+    <span py:when="2">Y</span>
+    <span py:when="3"> </span>
+    <span py:when="4"></span>
+    <span py:when="5" />
+    <span py:otherwise="">ELSE</span>
+  </div>
+</div>
+
+<!-- py:if -->
+<div>
+  <p py:if="True">True</p>
+</div>
+<div>
+  <p py:if="1">1</p>
+</div>
+<div>
+  <p py:if="False">False</p>
+</div>
+<div>
+  <p py:if="0">0</p>
+</div>
+<div>
+  <p py:if="()">()</p>
+</div>
+<div>
+  <p py:if="(0, )">(0, )</p>
+</div>
+<div>
+  <p py:if="True"> </p>
+</div>
+<div>
+  <p py:if="True"></p>
+</div>
+<div>
+  <p py:if="True" />
+</div>
+
+<div>
+  <p py:with="x=True">
+    <p py:if="x">Alma</p>
+  </p>
+</div>
+
+<!-- py:for -->
+<div>
+  <p py:for="x in range(5)">${ x * x }</p>
+</div>
+<div>
+  <p py:for="x in range(5)"> </p>
+</div>
+<div>
+  <p py:for="x in range(5)"></p>
+</div>
+<div>
+  <p py:for="x in range(5)" />
+</div>
+
+<!-- py:def -->
+<div>
+  <div py:def="fn2(a=11, b=12, c='!&gt;&amp;&lt;!', d='&lt;br /&gt;')">
+    <b>$a</b>
+    <i>${b}</i>
+    ${c}
+    ${Markup(d)}
+  </div>
+  ${fn2(2)}
+</div>
+
+</html>

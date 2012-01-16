@@ -1,0 +1,101 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:py="http://genshi.edgewall.org/"
+  xmlns:i18n="http://genshi.edgewall.org/i18n"
+  xmlns:svg="http://www.w3.org/2000/svg">
+  
+<!--! Translation of attributes -->
+
+<img alt="alt attribute" title="title attribute" />
+
+<img alt="attribute with special characters: &lt; &amp; &gt; &apos; &quot; &frac12; &oacute; &copy;" />
+
+<img alt="attribute with non-ASCII characters: árvíztűrő tükörfúrógép ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP" />
+
+<!--! Translation of element contents -->
+
+<a>Translatable address</a>
+<label>Translatable label</label>
+
+<table>
+  <thead><th>Translatable table header cell</th></thead>
+  <tr><td>Translatable table cell</td></tr>
+</table>
+
+<i18n:msg params="">
+  No parameters in this text.
+</i18n:msg>
+
+<p i18n:msg="">
+  No parameters in this text.
+</p>
+
+<i18n:msg params="name">
+  Please visit <a href="${site.url}">${site.title}</a> for help.
+</i18n:msg>
+
+<p i18n:msg="name">
+  Please visit <a href="${site.url}">${site.title}</a> for help.
+</p>
+
+<i18n:msg params="name,count">
+  <a href="${user.link}">${user.realname}</a> has ${user.contact_count} contacts.
+</i18n:msg>
+
+<p i18n:msg="name,count">
+  <a href="${user.link}">${user.realname}</a> has ${user.contact_count} contacts.
+</p>
+
+<i18n:msg params="a,b,c">
+  This text contains three parameters: ${a}, $b, ${c}
+</i18n:msg>
+
+<p i18n:msg="a,b,c">
+  This text contains three parameters: ${a}, $b, $c
+</p>
+
+<i18n:msg params="a,b,c">
+  Three digits: ${a}<b>-$b-</b>${c}
+</i18n:msg>
+
+<p i18n:msg="a,b,c">
+  Three digits: <b py:content="'-%s' % a" />$b<span py:replace="'%s-' % c" />
+</p>
+
+<p i18n:msg="name">
+  <i>Please</i> visit <b>the site <a href="${site.url}">${site.title}</a></b>
+  for help.
+</p>
+
+<!--! Plural and singular forms -->
+
+<!--<py:for each="message_count in (1, 2)">-->
+<!---->
+<!--  <i18n:choose numeral="len(messages)" params="num">-->
+<!--    <p i18n:singular="">You have <b>${message_count}</b> new message.</p>-->
+<!--    <p i18n:plural="">You have <b>${message_count}</b> new messages.</p>-->
+<!--  </i18n:choose>-->
+<!--  -->
+<!--  <p i18n:choose="len(messages); num">-->
+<!--    <i18n:singular>You have <b>${message_count}</b> new message.</i18n:singular>-->
+<!--    <i18n:plural>You have <b>${message_count}</b> new messages.</i18n:plural>-->
+<!--  </p>-->
+<!--  -->
+<!--</py:for>-->
+
+<!--! Translation domains -->
+
+<!--<i18n:domain name="text_domain_1">domain #</i18n:domain>-->
+<!--<i18n:domain name="text_domain_2">domain #</i18n:domain>-->
+<!---->
+<!--<p i18n:domain="text_domain_1">domain #</p>-->
+<!--<p i18n:domain="text_domain_2">domain #</p>-->
+
+<!--! Translator comments -->
+
+<p i18n:comment="Link to the relevant support site">Support Site</p>
+
+<p i18n:msg="user_realname" i18n:comment="Link to the pictures taken by the user today">
+  Pictures of ${user.realname} uploaded today
+</p>
+
+</html>

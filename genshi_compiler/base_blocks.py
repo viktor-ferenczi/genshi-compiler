@@ -25,7 +25,8 @@ class BaseBlock(object):
         'lineno', 
         'data', 
         'children',
-        'element')
+        'element',
+        'attribute')
     
     if constants.GENERATE_DEBUG_COMMENTS:
         __slots__ = __slots__ + ('template_line', )
@@ -47,15 +48,15 @@ class BaseBlock(object):
         # List of child blocks
         self.children = children or []
         
-        # Refers to the root (bottommost level) block which is belonging
-        # to the same template element as this block. This member variable
-        # is None for blocks not created from a non-Genshi element,
-        # a directive element or a directive attribute. The root block of
-        # the element's own block subtree is referring to itself,
-        # which is intentional. This member variable is needed only for
-        # the postprocessing, but not needed for the code formatting step,
-        # so the optimization step can remove the element blocks completely.
+        # Refers to the foreign (non-Genshi) element containing this block.
+        # It is set only for certain elements where knowing the element is
+        # needed. It is used only dueing the compilation and postprocessing
+        # phases and cleared by the optimization step to break the reference
+        # loops.
         self.element = None
+        
+        # Refers to the AttributeValueBlock containing this block or None
+        self.attribute = None
         
         # Template line, used only while printing debug comments
         if constants.GENERATE_DEBUG_COMMENTS:
@@ -123,12 +124,20 @@ class BaseBlock(object):
             self.children.extend(blocks)
 
     def apply_transformation(self, transformation, *args, **kws):
-        """ Applies the given transformation (callable) to all the child blocks
+        """ Applies the given transformation to all the child blocks
+        
+        transformation: Function to call to transform the block to something
+            else, receives the block as its first parameter and returns the
+            list of replacement blocks, which can be an empty list to remove
+            the block completely.
+            
+        args, kws: Extra parameters to pass to the transformation function.
+        
         """
-        children = []
+        transformed_children = []
         for child in self.children:
-            children.extend(transformation(child, *args, **kws))
-        self.children = children
+            transformed_children.extend(transformation(child, *args, **kws))
+        self.children = transformed_children
         
     ### Queries
 
@@ -160,6 +169,9 @@ class BaseBlock(object):
         
         """
         return False
+
+    def get_i18n_text(self):
+        return u''.join(child.get_i18n_text() for child in self.children)
     
     ### Overridables
     
@@ -211,7 +223,7 @@ class BaseBlock(object):
                 for name, value in member_variables:
                     if name == 'data' and value is None:
                         continue
-                    elif name == 'element':
+                    elif name in ('element', 'attribute'):
                         if value is None:
                             continue
                         elif value is self:
@@ -337,6 +349,9 @@ class BaseCodeBlock(BaseBlock):
     
     def is_whitespace(self):
         return False
+    
+    def get_i18n_text(self):
+        return u''
 
     def format(self, depth=0):
         raise NotImplementedError('Override this method!')
@@ -350,7 +365,7 @@ class DummyBlock(BaseBlock):
     """ Block without additional functionality to group other blocks
     """
     __slots__ = BaseBlock.__slots__
-
+    
 class ModuleBlock(BaseFramedBlock):
     """ Block representing the whole generated program module
     
@@ -388,7 +403,7 @@ class ModuleBlock(BaseFramedBlock):
 class FunctionDefinitionBlock(BaseFramedBlock):
     """ Block representing a template function definition
     
-    The data is the function's signature.
+    The data is the signature of the function, like: fn(a, b=2, c=3)
     
     """
     __slots__ = BaseFramedBlock.__slots__
@@ -403,8 +418,7 @@ class FunctionDefinitionBlock(BaseFramedBlock):
         return True
 
     def get_info(self):
-        signature = self.data.strip()
-        
+        signature = self.data
         function_name, arguments = signature.split('(', 1)
         arguments = arguments[:-1]
         
@@ -472,18 +486,36 @@ class SwitchBlock(BaseBlock):
     """
     __slots__ = BaseBlock.__slots__ + (
         'when_blocks',
-        'otherwise_blocks')
+        'otherwise_blocks',
+        'prepared')
 
     def __init__(self,
                  lineno,
                  data=None,
-                 children=None):
+                 children=None,
+                 prepared=False):
         
         BaseBlock.__init__(self, lineno, data, children)
     
         # Postprocessing collects the py:when and py:otherwise blocks
         self.when_blocks = []
         self.otherwise_blocks = []
+        self.prepared = prepared
+
+    def apply_transformation(self, transformation, *args, **kws):
+        BaseBlock.apply_transformation(self, transformation, *args, **kws)
+
+        # NOTE: 
+        # We must NOT process the self.when_blocks and self.otherwise_blocks 
+        # during the postprocessing step, since they are filled only during
+        # that same step which would cause an infinite loop!
+        if self.prepared:
+            
+            for block in self.when_blocks:
+                block.apply_transformation(transformation, *args, **kws)
+                
+            for block in self.otherwise_blocks:
+                block.apply_transformation(transformation, *args, **kws)
     
 class CaseBlock(BaseBlock):
     """ Block resulting from the compilation of a py:when directive
@@ -521,92 +553,101 @@ class ElementBlock(BaseBlock):
     
     """
     __slots__ = BaseBlock.__slots__ + (
-        'opening_tag',
-        'closing_tag',
-        'strip_expression')
+        'start_tag',
+        'end_tag',
+        'strip_expression',
+        'element_number')
     
     def __init__(self,
                  lineno,
                  data=None,
                  children=[],
-                 opening_tag=None,
-                 closing_tag=None,
-                 strip_expression=None):
+                 start_tag=None,
+                 end_tag=None,
+                 strip_expression=None,
+                 element_number=None):
         BaseBlock.__init__(self, lineno, data, children)
         
-        # Block representing the compiled opening tag of the element
+        # Block representing the compiled start tag of the element
         # FIXME: It could be just a list of blocks.
-        self.opening_tag = opening_tag
+        self.start_tag = start_tag
         
-        # Block representing the compiled closing tag of the element
+        # Block representing the compiled end tag of the element
         # FIXME: It could be just a list of blocks.
-        self.closing_tag = closing_tag
+        self.end_tag = end_tag
         
-        # Expression to strip out the opening and closing tags as runtime
+        # Expression to strip out the start and end tags at runtime
         # if any or None to unconditionally keep the tags
         self.strip_expression = strip_expression
         
+        # Serial number of this element inside an i18n:msg directive
+        self.element_number = element_number
+        
         # Type hints
         if 0:
-            assert isinstance(self.opening_tag, OpeningTagBlock)
-            assert isinstance(self.closing_tag, ClosingTagBlock)
+            assert isinstance(self.start_tag, OpeningTagBlock)
+            assert isinstance(self.end_tag, ClosingTagBlock)
 
     def apply_transformation(self, transformation, *args, **kws):
         BaseBlock.apply_transformation(self, transformation, *args, **kws)
         
         # FIXME: Redundant code!
         
-        if self.opening_tag:
-            opening_tag = transformation(self.opening_tag, *args, **kws)
-            if opening_tag:
-                assert len(opening_tag) == 1
-                assert isinstance(opening_tag[0], OpeningTagBlock)
-                self.opening_tag = opening_tag[0]
+        if self.start_tag:
+            start_tag = transformation(self.start_tag, *args, **kws)
+            if start_tag:
+                assert len(start_tag) == 1
+                assert isinstance(start_tag[0], OpeningTagBlock)
+                self.start_tag = start_tag[0]
             else:
-                self.opening_tag = None
+                self.start_tag = None
             
-        if self.closing_tag:
-            closing_tag = transformation(self.closing_tag, *args, **kws)
-            if closing_tag:
-                assert len(closing_tag) == 1
-                assert isinstance(closing_tag[0], ClosingTagBlock)
-                self.closing_tag = closing_tag[0]
+        if self.end_tag:
+            end_tag = transformation(self.end_tag, *args, **kws)
+            if end_tag:
+                assert len(end_tag) == 1
+                assert isinstance(end_tag[0], ClosingTagBlock)
+                self.end_tag = end_tag[0]
             else:
-                self.closing_tag = None
+                self.end_tag = None
         
     def is_empty(self):
-        if self.opening_tag and not self.opening_tag.is_empty():
+        if self.start_tag and not self.start_tag.is_empty():
             return False
-        if self.closing_tag and not self.closing_tag.is_empty():
+        if self.end_tag and not self.end_tag.is_empty():
             return False
         return not self.children
     
     def is_whitespace(self):
-        if self.opening_tag or self.closing_tag:
+        if self.start_tag or self.end_tag:
             return False
         return BaseBlock.is_whitespace(self)
+    
+    def get_i18n_text(self):
+        children_i18n_text = BaseBlock.get_i18n_text(self)
+        return u'[%d:%s]' % (self.element_number, children_i18n_text)
     
     if constants.DETECT_RECURSION:
         
         def contains(self, block, visited=set()):
-            if self.opening_tag and self.opening_tag.contains(block, visited):
+            if self.start_tag and self.start_tag.contains(block, visited):
                 return True
-            if self.closing_tag and self.closing_tag.contains(block, visited):
+            if self.end_tag and self.end_tag.contains(block, visited):
                 return True
             return BaseBlock.contains(self, block, visited)
     
-# FIXME: This block class would not be needed if element_block.opening_tag would be a block list.
+# FIXME: This block class would not be needed if element_block.start_tag would be a list of blocks.
 class OpeningTagBlock(BaseBlock):
-    """ Block representing the opening tag of an element
+    """ Block representing the start tag of an element
     
     The data is the lower case tag name without the XML namespace prefix.
     
     """
     __slots__ = BaseBlock.__slots__
     
-# FIXME: This block class would not be needed if element_block.closing_tag would be a block list.
+# FIXME: This block class would not be needed if element_block.end_tag would be a list of blocks.
 class ClosingTagBlock(BaseBlock):
-    """ Block representing the closing tag of an element
+    """ Block representing the end tag of an element
     
     The data is the lower case tag name without the XML namespace prefix.
     
@@ -616,14 +657,19 @@ class ClosingTagBlock(BaseBlock):
     def is_invariant(self):
         return True
 
+class AttributeValueBlock(BaseBlock):
+    """ Block representing the value of an element attribute
+    
+    The data is the name of the element attribute, including the namespace
+    prefix if any.
+    
+    """
+    __slots__ = BaseBlock.__slots__
+    
 ### Generated source code blocks
 
-class MarkupBlock(BaseCodeBlock):
-    """ Code line emitting raw markup to the output
-    
-    The data is the unicode markup should be written directly to the output
-    without escaping.
-    
+class InvariantBlock(BaseCodeBlock):
+    """ Common base class for code blocks emitting invariant markup or text
     """
     __slots__ = BaseCodeBlock.__slots__
 
@@ -636,35 +682,99 @@ class MarkupBlock(BaseCodeBlock):
     def is_invariant(self):
         return True
     
-class MarkupExpressionBlock(BaseCodeBlock):
-    """ Code line emitting the result of a runtime evaluated expression
+    def get_markup(self):
+        raise NotImplementedError('Override this method!')
+
+class MarkupBlock(InvariantBlock):
+    """ Code block emitting raw markup to the output
+    
+    The data is the unicode markup should be written directly to the output
+    without escaping.
+    
+    """
+    __slots__ = InvariantBlock.__slots__
+
+    def get_markup(self):
+        return self.data
+    
+class AttributeValueFragmentBlock(InvariantBlock):
+    """ Code block emitting XML attribute escaped text output
+    
+    The data is the original (non-escaped) text.
+    
+    """
+    __slots__ = InvariantBlock.__slots__
+
+    def get_markup(self):
+        return util.escape_attribute(self.data)
+    
+class TextBlock(InvariantBlock):
+    """ Code block emitting XML escaped text output
+    
+    The data is the original (non-escaped) text.
+    
+    """
+    __slots__ = InvariantBlock.__slots__
+
+    def get_markup(self):
+        return util.escape_text(self.data)
+    
+    def get_i18n_text(self):
+        return self.data
+    
+class ExpressionBlock(BaseCodeBlock):
+    """ Base class for the expression blocks
+    """
+    __slots__ = BaseCodeBlock.__slots__
+    
+class TranslatableExpressionBlock(ExpressionBlock):
+    """ Base class for expressing blocks can play a role in i18n:msg directives
+    """
+    __slots__ = ExpressionBlock.__slots__ + (
+        'parameter_name', )
+    
+    def __init__(self,
+                 lineno,
+                 data=None,
+                 children=[],
+                 parameter_name=None):
+        ExpressionBlock.__init__(self, lineno, data, children)
+        
+        # Name of the corresponding parameter of the enclosing i18n:msg directive
+        self.parameter_name = parameter_name
+    
+    def get_i18n_text(self):
+        return u'%%(%s)s' % self.parameter_name
+    
+class MarkupExpressionBlock(TranslatableExpressionBlock):
+    """ Code block emitting the result of a runtime evaluated expression
     as raw markup to the output
     
     The data is an expression must be executed runtime, its result value
     is written to the output without escaping.
     
     """
-    __slots__ = BaseCodeBlock.__slots__
+    __slots__ = TranslatableExpressionBlock.__slots__
     
-class TextExpressionBlock(BaseCodeBlock):
-    """ Code line emitting the result of a runtime evaluated expression
+class TextExpressionBlock(TranslatableExpressionBlock):
+    """ Code block emitting the result of a runtime evaluated expression
     as XML escaped text to the output
     
     The data is an expression must be executed runtime, its result value
     is escaped, then written to the output.
     
     """
-    __slots__ = BaseCodeBlock.__slots__
-
-class AttributeExpressionBlock(TextExpressionBlock):
-    """ Code line emitting the result of a runtime evaluated expression
+    __slots__ = TranslatableExpressionBlock.__slots__
+    
+class AttributeExpressionBlock(ExpressionBlock):
+    """ Code block emitting the result of a runtime evaluated expression
     as XML attribute escaped text to the output
     
     The data is an expression must be executed runtime, its result value
     is attribute escaped, then written to the output.
     
     """
-    __slots__ = TextExpressionBlock.__slots__
+    __slots__ = ExpressionBlock.__slots__
     
 class DynamicAttributesBlock(BaseCodeBlock):
     """ Block representing code adding attributes at runtime (py:attrs)

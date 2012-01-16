@@ -1,0 +1,291 @@
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:svg="http://www.w3.org/2000/svg">
+  
+
+
+
+
+
+
+
+
+
+
+<!-- Regular '&' "comment" -->
+<!-- Another <regular> comment -->
+
+
+
+
+
+<p>árvíztűrő tükörfúrógép ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP</p>
+
+
+
+<div><p><span>
+      7 2 Hello!
+      $ $x $1 $1
+    </span></p></div>
+
+8
+
+
+
+
+<ul>
+  Bar
+</ul>
+
+<div>
+  
+<!-- ${greeting2('world')}
+  ${greeting2('everyone else')} -->
+</div>
+
+<div>
+  
+  
+  
+</div>
+
+
+<table>
+  <tr>
+    <td> </td><td>!</td><td>"</td><td>#</td><td>$</td><td>%</td><td>&amp;</td><td>'</td><td>(</td><td>)</td><td>*</td><td>+</td><td>,</td><td>-</td><td>.</td><td>/</td>
+  </tr>
+</table>
+
+<div>
+  <svg:canvas svg:background="#000">
+    <svg:circle />
+  </svg:canvas>
+</div>
+
+
+&amp;
+&lt;
+&gt;
+"
+'
+
+<img title="&amp;&lt;&gt;&quot;'" />
+
+
+&nbsp;
+&copy;
+&frac12;
+&oacute;
+
+<!-- Normal comment, it is written to the output as is -->
+
+<div><ul><li>11</li></ul></div>
+<div><ul><li>11</li></ul></div>
+
+<div><ul><li>1</li></ul></div>
+<div><ul><li>1</li></ul></div>
+<div><ul><li>2</li></ul></div>
+<div><ul><li>2</li></ul></div>
+<div><ul><li>1</li></ul></div>
+<div><ul><li>1</li></ul></div>
+<div><ul><li>1</li></ul></div>
+<div><ul><li>1</li></ul></div>
+
+
+
+<b>Testing markup</b>
+
+<a title="&amp;&lt;&gt;&quot;'">Attribute quoting test</a>
+
+<h1>Testing standalone directives</h1>
+
+<h2>Elements</h2>
+
+
+
+
+  <b>1</b>
+  <i>12</i>
+  !&gt;&amp;&lt;!
+  <br />
+
+
+0
+1
+4
+9
+16
+
+
+
+True
+
+1
+
+
+
+(0, )
+
+X
+Y
+ELSE
+X
+Y
+ELSE
+
+[1]{2}
+
+<h2>Attributes</h2>
+
+<!-- py:strip -->
+<div>
+  <p>Hello</p>
+</div>
+<div>
+  <p>Hello</p>
+</div>
+<div>
+  <span><p>Hello</p></span>
+</div>
+
+<!-- py:attrs -->
+<div>
+  <div id="div1" class="div1class" onclick="return false;">Hello</div>
+  <div id="div1" class="div1class" onclick="return false;"> </div>
+  <div id="div1" class="div1class" onclick="return false;"></div>
+  <div id="div1" class="div1class" onclick="return false;"></div>
+</div>
+
+<!-- py:content -->
+<div>
+  <span>0</span>
+  <span>True</span>
+  <span></span>
+  <span>123</span>
+  <span><hr /></span>
+  <span>
+    <span></span>
+  </span>
+</div>
+
+<!-- py:replace -->
+<div>
+  0
+  True
+  
+  123
+  <hr />
+</div>
+
+<!-- py:with -->
+<div>
+  <span>[1]{2}</span>
+  <span>{1}[2]</span>
+  <span>[]{}</span>
+  <span>{}[]</span>
+  <span> </span>
+  <span></span>
+  <span></span>
+</div>
+
+<!-- py:choose, py:when, py:otherwise -->
+<!-- py:choose #1 -->
+<div>
+  <div><span>X</span></div>
+</div>
+<!-- py:choose #2 -->
+<div>
+  <div><span>Y</span></div>
+</div>
+<!-- py:choose #3 -->
+<div>
+  <div><span>ELSE</span></div>
+</div>
+<!-- py:choose #4 -->
+<div>
+  <div><span>X</span></div>
+</div>
+<!-- py:choose #5 -->
+<div>
+  <div><span>Y</span></div>
+</div>
+<!-- py:choose #6 -->
+<div>
+  <div><span>X</span></div>
+</div>
+<!-- py:choose #7 -->
+<div>
+  <div><span>X</span></div>
+</div>
+<!-- py:choose #8 -->
+<div>
+  <div><span> </span></div>
+</div>
+<!-- py:choose #9 -->
+<div>
+  <div><span></span></div>
+</div>
+<!-- py:choose #10 -->
+<div>
+  <div><span></span></div>
+</div>
+
+<!-- py:if -->
+<div>
+  <p>True</p>
+</div>
+<div>
+  <p>1</p>
+</div>
+<div>
+  
+</div>
+<div>
+  
+</div>
+<div>
+  
+</div>
+<div>
+  <p>(0, )</p>
+</div>
+<div>
+  <p> </p>
+</div>
+<div>
+  <p></p>
+</div>
+<div>
+  <p></p>
+</div>
+
+<div>
+  <p>
+    <p>Alma</p>
+  </p>
+</div>
+
+<!-- py:for -->
+<div>
+  <p>0</p><p>1</p><p>4</p><p>9</p><p>16</p>
+</div>
+<div>
+  <p> </p><p> </p><p> </p><p> </p><p> </p>
+</div>
+<div>
+  <p></p><p></p><p></p><p></p><p></p>
+</div>
+<div>
+  <p></p><p></p><p></p><p></p><p></p>
+</div>
+
+<!-- py:def -->
+<div>
+  
+  <div>
+    <b>2</b>
+    <i>12</i>
+    !&gt;&amp;&lt;!
+    <br />
+  </div>
+</div>
+
+</html>

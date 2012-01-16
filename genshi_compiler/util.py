@@ -13,8 +13,9 @@ import difflib, xml.sax.saxutils
 import constants, util
 
 
-# XML escapes text
+# XML escaping (does not support HTML entities, only the base set of XML entities)
 escape_text = xml.sax.saxutils.escape
+unescape_xml = xml.sax.saxutils.unescape
 
 def escape_attribute(value, quoteattr=xml.sax.saxutils.quoteattr):
     """ Escapes a value to be usitable for double quoted XML attributes
@@ -139,6 +140,18 @@ def remove_duplicate_whitespace(text):
     """
     return constants.RX_DUPLICATE_WHITESPACE.subn(
         lambda m: reduce_whitespace(m.group(0)), text)[0]
+
+def separate_whitespace(text):
+    """ Separates the leading and trailing whitespace
+    
+    Returns (leading_whitespace, non_whitespace_text, trailing_whitespace)
+    
+    """
+    empty_string = text[:0]
+    if not text.strip():
+        return (text, empty_string, empty_string)
+    left, center, right = constants.RX_LEFT_RIGHT_WHITESPACE.match(text).groups()
+    return (left, center or empty_string, right or empty_string)
 
 def print_diff(a_text, b_text, a_label, b_label):
     """ Returns printable unified diff of two multiline text values

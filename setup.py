@@ -17,10 +17,14 @@ code is typically ~40x faster than rendering the same via Genshi.
 There is a cost of this speedup. Some of Genshi's dynamic
 features are not available, most notably anything that depends
 on a template loader (xi:include, xi:fallback), the XML element
-tree representation (py:match) or the token stream (filters).''',  
+tree representation (py:match) or the token stream (filters).
+Language translation (i18n) support is currently limited
+to simple text inside the translatable elements and attributes
+and the i18n:msg directive.''',  
     classifiers=[
-        'Development Status :: 4 - Beta',
+        'Development Status :: 3 - Alpha',
         'Environment :: Web Environment',
+        'Classifier: Operating System :: OS Independent',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Topic :: Software Development :: Libraries :: Python Modules',

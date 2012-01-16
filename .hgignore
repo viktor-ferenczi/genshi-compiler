@@ -7,6 +7,8 @@ syntax: glob
 # Compiled files
 *.pyc
 *.pyo
+*.pot
+*.mo
 
 # Cython build directories
 _pyxbld
@@ -22,6 +24,6 @@ profile.*
 syntax: regexp
 
 # Generated test files
-^tests/data/.*?\.output\.html$
-^tests/data/[^_].*?\.py$
+^tests/data/output/.*\.html$
+^tests/data/generated_source/[a-z]\w+.py$
 ^benchmarks/.*?\.pyx$

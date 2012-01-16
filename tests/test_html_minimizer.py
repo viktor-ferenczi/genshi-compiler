@@ -10,7 +10,7 @@ License: MIT
 # to allow testing it before installation
 import os, sys
 if os.path.isdir('../genshi_compiler'):
-    sys.path.append('..')
+    sys.path.insert(0, '..')
 
 import unittest
 

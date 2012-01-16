@@ -10,9 +10,9 @@ License: MIT
 # to allow testing it before installation
 import os, sys
 if os.path.isdir('../genshi_compiler'):
-    sys.path.append('..')
+    sys.path.insert(0, '..')
 
-import unittest, difflib
+import unittest
 
 import genshi_compiler
 from genshi_compiler import util
@@ -51,6 +51,17 @@ class UtilityTestCase(unittest.TestCase):
         self.assertEquals(util.remove_duplicate_whitespace(' x   x '), ' x x ')
         self.assertEquals(util.remove_duplicate_whitespace('  x   x  '), ' x x ')
         self.assertEquals(util.remove_duplicate_whitespace('\n \n \tx \t  x\n \t \n'), '\nx x\n')
+        
+    def test_separate_whitespace(self):
+        self.assertEquals(util.separate_whitespace(''), ('', '', ''))
+        self.assertEquals(util.separate_whitespace(' '), (' ', '', ''))
+        self.assertEquals(util.separate_whitespace('  '), ('  ', '', ''))
+        self.assertEquals(util.separate_whitespace(' x'), (' ', 'x', ''))
+        self.assertEquals(util.separate_whitespace('x '), ('', 'x', ' '))
+        self.assertEquals(util.separate_whitespace(' x '), (' ', 'x', ' '))
+        self.assertEquals(util.separate_whitespace('\n x'), ('\n ', 'x', ''))
+        self.assertEquals(util.separate_whitespace('x\t '), ('', 'x', '\t '))
+        self.assertEquals(util.separate_whitespace('\t x \n'), ('\t ', 'x', ' \n'))
         
     # TODO: Test all the other functions
 

@@ -9,16 +9,16 @@ License: MIT
 import time
 
 
-def benchmark(fn,
+def benchmark(function,
               period=1.0,
               minimum_time=1e-9,
               get_time=time.time,
               unbenchmarked_first_call=True,
-              nop=lambda: None):
+              no_operation=lambda: None):
     """ Runs the given function as many times as it can in the given
     period of time
     
-    fn: callable (function) to benchmark
+    function: callable (function) to benchmark
     
     period: approximate time period to repeatedly run the function
     
@@ -28,8 +28,10 @@ def benchmark(fn,
     unbenchmarked_first_call: set to False to prevent the first,
         unbenchmarked call to the callable
         
-    nop: empty function used for the empty benchmark loop test,
-        you should not need to midify this
+    no_operation: empty function used for the empty benchmark loop test,
+        you should not need to midify this normally, but if you need
+        to substract some internal operations or calls from the final
+        results, then it might be useful to override this
     
     Returns the time needed to execute a single function call in average,
     substracting the empty benchmark loop and the function call itself.
@@ -42,14 +44,14 @@ def benchmark(fn,
     get_time = time.time
     
     # Time the empty benchmark loop first
-    if fn is nop:
+    if function is no_operation:
         nop_time = 0.0
     else:
-        nop_time = benchmark(nop, 0.1)
+        nop_time = benchmark(no_operation, 0.1)
 
     # Call the function once without timing to fill any caches
     if unbenchmarked_first_call:
-        fn()
+        function()
     
     # Wait for a clock tick
     st = get_time()
@@ -61,7 +63,7 @@ def benchmark(fn,
     # Run the function as many times as we can in the given period of time
     count = 0
     while 1:
-        fn()
+        function()
         count += 1
         if get_time() > et:
             break

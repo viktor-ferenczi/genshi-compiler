@@ -1,0 +1,157 @@
+# English (United States) translations for PROJECT.
+# Copyright (C) 2011 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2011.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PROJECT VERSION\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2011-08-05 08:08+0200\n"
+"PO-Revision-Date: 2011-11-30 14:33+0100\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: en_US <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 0.9.5\n"
+
+msgid "árvíztűrő tükörfúrógép ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"
+msgstr "translated: árvíztűrő tükörfúrógép ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"
+
+msgid ""
+"Hello!\n"
+"      $ $x $1 $1"
+msgstr ""
+"translated: \"\n"
+"\"Hello!\n"
+"\"\n"
+"\"      $ $x $1 $1"
+
+msgid "Bar"
+msgstr "translated: Bar"
+
+msgid "Hello,"
+msgstr "translated: Hello,"
+
+msgid "&<>\"'"
+msgstr "translated: &<>\"'"
+
+msgid ""
+"©\n"
+"½\n"
+"ó"
+msgstr ""
+"translated: \"\n"
+"\"©\n"
+"\"\n"
+"\"½\n"
+"\"\n"
+"\"ó"
+
+msgid "Testing markup"
+msgstr "translated: Testing markup"
+
+msgid "Attribute quoting test"
+msgstr "translated: Attribute quoting test"
+
+msgid "Testing standalone directives"
+msgstr "translated: Testing standalone directives"
+
+msgid "Elements"
+msgstr "translated: Elements"
+
+msgid "True"
+msgstr "translated: True"
+
+msgid "False"
+msgstr "translated: False"
+
+msgid "X"
+msgstr "translated: X"
+
+msgid "Y"
+msgstr "translated: Y"
+
+msgid "ELSE"
+msgstr "translated: ELSE"
+
+msgid "Attributes"
+msgstr "translated: Attributes"
+
+msgid "Hello"
+msgstr "translated: Hello"
+
+msgid "Alma"
+msgstr "translated: Alma"
+
+msgid "alt attribute"
+msgstr "translated: alt attribute"
+
+msgid "title attribute"
+msgstr "translated: title attribute"
+
+msgid "attribute with special characters: < & > ' \" ½ ó ©"
+msgstr "translated: attribute with special characters: < & > ' \" ½ ó ©"
+
+msgid ""
+"attribute with non-ASCII characters: árvíztűrő tükörfúrógép ÁRVÍZTŰRŐ "
+"TÜKÖRFÚRÓGÉP"
+msgstr ""
+"translated: attribute with non-ASCII characters: árvíztűrő tükörfúrógép "
+"ÁRVÍZTŰRŐ TÜKÖRFÚRÓGÉP"
+
+msgid "Translatable address"
+msgstr "translated: Translatable address"
+
+msgid "Translatable label"
+msgstr "translated: Translatable label"
+
+msgid "Translatable table header cell"
+msgstr "translated: Translatable table header cell"
+
+msgid "Translatable table cell"
+msgstr "translated: Translatable table cell"
+
+msgid "No parameters in this text."
+msgstr "translated: No parameters in this text."
+
+#, python-format
+msgid "Please visit [1:%(name)s] for help."
+msgstr "translated: Visit [1:%(name)s] for more information"
+
+#, python-format
+msgid "[1:%(name)s] has %(count)s contacts."
+msgstr "translated: %(count)s contacts of [1:%(name)s]"
+
+#, python-format
+msgid "This text contains three parameters: %(a)s, %(b)s, %(c)s"
+msgstr "translated: This text contains three parameters: %(a)s, %(b)s, %(c)s"
+
+#, python-format
+msgid "Three digits: %(a)s[1:-%(b)s-]%(c)s"
+msgstr "translated: Three digits: %(a)s[1:-%(b)s-]%(c)s"
+
+#, python-format
+msgid "Three digits: [1:%(a)s]%(b)s%(c)s"
+msgstr "translated: Three digits: [1:%(a)s%(c)s]%(b)s"
+
+#, fuzzy, python-format
+msgid ""
+"[1:Please] visit [2:the site [3:%(name)s]]\n"
+"  for help."
+msgstr ""
+"Um Hilfe zu erhalten besuchen Sie [1:bitte][3:%(name)s], [2:das ist eine "
+"Web-Site]"
+
+#. Link to the relevant support site
+msgid "Support Site"
+msgstr "translated: Support Site"
+
+#. Link to the pictures taken by the user today
+#, python-format
+msgid "Pictures of %(user_realname)s uploaded today"
+msgstr "translated: Pictures of %(user_realname)s uploaded today"
+

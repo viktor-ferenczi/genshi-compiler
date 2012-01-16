@@ -10,6 +10,9 @@ There is a cost of this speedup. Some of Genshi's dynamic
 features are not available, most notably anything that depends
 on a template loader (xi:include), the XML element tree
 representation (py:match) or the token stream (filters).
+Language translation (i18n) support is currently limited
+to simple text inside the translatable elements and attributes
+and the i18n:msg directive.
 
 Please see the project home page for more details:
 http://code.google.com/p/genshi-compiler/

@@ -23,14 +23,16 @@ class ModuleBlock(base_blocks.ModuleBlock):
 #!/usr/bin/python
 # -*- coding: ascii -*-
 
-""" Generated template rendering code based on the following Genshi
-XML template: %(template_identifier)s
+""" Generated template rendering code
 
 WARNING: This is automatically generated source code!
 WARNING: Do NOT modify this file by hand or YOUR CHANGES WILL BE LOST!
 
-Modify the %(template_filename)s
-XML template file, then regenerate this module instead.
+Modify the following XML template file instead:
+
+%(template_filename)s
+
+Then don't forget to regenerate this module.
 
 """
 
@@ -40,7 +42,7 @@ import xml.sax.saxutils
 # Converts any object to unicode
 _x_to_text = unicode
 
-# XML escapes text
+# XML escaping text
 _x_escape_text = xml.sax.saxutils.escape
 
 def _x_escape_attribute(value, quoteattr=xml.sax.saxutils.quoteattr):
@@ -57,19 +59,22 @@ def _x_format_attributes(_x_append_markup, attributes):
         if attribute_value is not None:
             _x_append_markup(' %%s="%%s"' %% (
                 attribute_name, _x_escape_attribute(attribute_value)))
-'''
-
+'''    
+    
     # No module footer needed
     
 class FunctionDefinitionBlock(base_blocks.FunctionDefinitionBlock):
     __slots__ = base_blocks.FunctionDefinitionBlock.__slots__
     
     # Function body header
+    # NOTE: Do NOT add gettext_translator to the list of globals!
+    #       That can be owerridden by a parameter, it is intentional!
     header_template = '''\
-global _x_escape_text, _x_to_text
+global _x_to_text, _x_escape_text
 
 _x_markup_fragments = []
 _x_append_markup = _x_markup_fragments.append
+
 '''
     
     # Function body footer
@@ -84,8 +89,7 @@ return _x_html
 return u''
 '''
     
-    def format(self, depth=0):    
-        
+    def format(self, depth=0):
         lines = (
             [(depth, 'def %s:' % self.data)] +
             base_blocks.FunctionDefinitionBlock.format(self, depth + 1))
@@ -210,7 +214,7 @@ class ElementBlock(base_blocks.ElementBlock):
     def format(self, depth=0, counter=itertools.count()):
         lines = []
         
-        if self.opening_tag:
+        if self.start_tag:
             # NOTE: Empty string strip expressions are already processed in the
             #       compilation phase. So we do not get an empty expression or
             #       static truth values here, only expressions have to be
@@ -220,18 +224,18 @@ class ElementBlock(base_blocks.ElementBlock):
                 variable_name = '_x_keep_%d' % index
                 lines.append((depth, '%s = not (%s)' % (variable_name, self.strip_expression)))
                 lines.append((depth, 'if %s:' % variable_name))
-                lines.extend(self.opening_tag.format(depth + 1))
+                lines.extend(self.start_tag.format(depth + 1))
             else:
-                lines.extend(self.opening_tag.format(depth))
+                lines.extend(self.start_tag.format(depth))
                 
         lines.extend(base_blocks.ElementBlock.format(self, depth))
         
-        if self.closing_tag:
+        if self.end_tag:
             if self.strip_expression:
                 lines.append((depth, 'if %s:' % variable_name))
-                lines.extend(self.closing_tag.format(depth + 1))
+                lines.extend(self.end_tag.format(depth + 1))
             else:
-                lines.extend(self.closing_tag.format(depth))
+                lines.extend(self.end_tag.format(depth))
                 
         if constants.GENERATE_DEBUG_COMMENTS:
             self.insert_debug_comment(lines, depth)
@@ -243,7 +247,10 @@ class OpeningTagBlock(base_blocks.OpeningTagBlock):
 
 class ClosingTagBlock(base_blocks.ClosingTagBlock):
     __slots__ = base_blocks.ClosingTagBlock.__slots__
-
+    
+class AttributeValueBlock(base_blocks.AttributeValueBlock):
+    __slots__ = base_blocks.AttributeValueBlock.__slots__
+    
 ### Generated source code blocks
     
 class MarkupBlock(base_blocks.MarkupBlock):
@@ -251,6 +258,28 @@ class MarkupBlock(base_blocks.MarkupBlock):
     
     def format(self, depth=0):
         lines = [(depth, '_x_append_markup(%r)' % self.data)]
+        
+        if constants.GENERATE_DEBUG_COMMENTS:
+            self.insert_debug_comment(lines, depth)
+            
+        return lines
+    
+class AttributeValueFragmentBlock(base_blocks.AttributeValueFragmentBlock):
+    __slots__ = base_blocks.AttributeValueFragmentBlock.__slots__
+    
+    def format(self, depth=0):
+        lines = [(depth, '_x_append_markup(%r)' % util.escape_attribute(self.data))]
+        
+        if constants.GENERATE_DEBUG_COMMENTS:
+            self.insert_debug_comment(lines, depth)
+            
+        return lines
+
+class TextBlock(base_blocks.TextBlock):
+    __slots__ = base_blocks.TextBlock.__slots__
+    
+    def format(self, depth=0):
+        lines = [(depth, '_x_append_markup(%r)' % util.escape_text(self.data))]
         
         if constants.GENERATE_DEBUG_COMMENTS:
             self.insert_debug_comment(lines, depth)

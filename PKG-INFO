@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: genshi_compiler
-Version: 0.1.1
+Version: 0.1.2
 Summary: Genshi template compiler
 Home-page: http://code.google.com/p/genshi-compiler
 Author: Viktor Ferenczi
@@ -14,12 +14,18 @@ Description: Genshi Compiler allows for compiling simple Genshi XML templates
              features are not available, most notably anything that depends
              on a template loader (xi:include, xi:fallback), the XML element
              tree representation (py:match) or the token stream (filters).
+             Language translation (i18n) support is currently limited
+             to simple text inside the translatable elements and attributes
+             and the i18n:msg directive.
 Keywords: python genshi compiler codegeneration template performance
-Platform: UNKNOWN
-Classifier: Development Status :: 4 - Beta
+Platform: platform independent
+Classifier: Development Status :: 3 - Alpha
 Classifier: Environment :: Web Environment
+Classifier: Operating System :: OS Independent
 Classifier: Intended Audience :: Developers
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Topic :: Software Development :: Libraries :: Python Modules
+Topic :: Software Development :: Compilers
+Topic :: Software Development :: Code Generators
 Classifier: Topic :: Text Processing :: Markup :: HTML
 Classifier: Topic :: Text Processing :: Markup :: XML

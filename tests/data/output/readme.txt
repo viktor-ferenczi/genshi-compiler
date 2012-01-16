@@ -1,0 +1,1 @@
+Various rendering output files are saved here during development.
