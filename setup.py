@@ -6,7 +6,7 @@ __release__ = None
 exec open('genshi_compiler/version.py')
 
 setuptools.setup(
-    name='genshi_compiler',
+    name='genshi-compiler',
     version=__release__,
     description='Genshi template compiler',
     long_description='''\
@@ -22,7 +22,7 @@ Language translation (i18n) support is currently limited
 to simple text inside the translatable elements and attributes
 and the i18n:msg directive.''',  
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
         'Classifier: Operating System :: OS Independent',
         'Intended Audience :: Developers',

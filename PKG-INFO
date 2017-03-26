@@ -1,5 +1,5 @@
 Metadata-Version: 1.0
-Name: genshi_compiler
+Name: genshi-compiler
 Version: 0.1.2
 Summary: Genshi template compiler
 Home-page: https://github.com/viktor-ferenczi/genshi-compiler/
@@ -19,7 +19,7 @@ Description: Genshi Compiler allows for compiling simple Genshi XML templates
              and the i18n:msg directive.
 Keywords: python genshi compiler codegeneration template performance
 Platform: platform independent
-Classifier: Development Status :: 3 - Alpha
+Classifier: Development Status :: 5 - Production/Stable
 Classifier: Environment :: Web Environment
 Classifier: Operating System :: OS Independent
 Classifier: Intended Audience :: Developers
