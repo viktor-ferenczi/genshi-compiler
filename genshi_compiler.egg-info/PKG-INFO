@@ -6,6 +6,7 @@ Home-page: https://github.com/viktor-ferenczi/genshi-compiler/
 Author: Viktor Ferenczi
 Author-email: viktor@ferenczi.eu
 License: MIT
+Description-Content-Type: UNKNOWN
 Description: Genshi Compiler allows for compiling simple Genshi XML templates
         to pure Python code. You can render the whole template or any of
         the template functions by importing generated code. The generated
@@ -21,7 +22,7 @@ Keywords: python genshi compiler codegeneration template performance
 Platform: UNKNOWN
 Classifier: Development Status :: 5 - Production/Stable
 Classifier: Environment :: Web Environment
-Classifier: Classifier: Operating System :: OS Independent
+Classifier: Operating System :: OS Independent
 Classifier: Intended Audience :: Developers
 Classifier: License :: OSI Approved :: MIT License
 Classifier: Topic :: Software Development :: Libraries :: Python Modules
