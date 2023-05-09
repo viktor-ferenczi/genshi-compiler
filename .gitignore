@@ -1,12 +1,13 @@
-# Use the glob syntax for all entries
-syntax: glob
-
-# User specific project file
-*.wpu
+.idea
+__pycache__
+*.py[co]
+*,cover
+*.coverage
+*.bak
+*.log
+*~
 
 # Compiled files
-*.pyc
-*.pyo
 *.pot
 *.mo
 

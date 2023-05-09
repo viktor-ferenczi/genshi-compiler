@@ -1,6 +1,6 @@
 Metadata-Version: 1.0
 Name: genshi-compiler
-Version: 0.1.2
+Version: 0.2.0
 Summary: Genshi template compiler
 Home-page: https://github.com/viktor-ferenczi/genshi-compiler/
 Author: Viktor Ferenczi
