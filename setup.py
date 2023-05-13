@@ -3,7 +3,8 @@ import setuptools
 # Get version info
 __version__ = None
 __release__ = None
-exec open('genshi_compiler/version.py')
+with open('genshi_compiler/version.py') as f:
+    exec(f.read())
 
 setuptools.setup(
     name='genshi-compiler',
@@ -20,7 +21,7 @@ on a template loader (xi:include, xi:fallback), the XML element
 tree representation (py:match) or the token stream (filters).
 Language translation (i18n) support is currently limited
 to simple text inside the translatable elements and attributes
-and the i18n:msg directive.''',  
+and the i18n:msg directive.''',
     classifiers=[
         'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
@@ -32,7 +33,7 @@ and the i18n:msg directive.''',
         'Topic :: Software Development :: Code Generators',
         'Topic :: Text Processing :: Markup :: HTML',
         'Topic :: Text Processing :: Markup :: XML',
-        ], 
+    ],
     keywords='python genshi compiler codegeneration template performance',
     author='Viktor Ferenczi',
     author_email='viktor@ferenczi.eu',
@@ -42,4 +43,4 @@ and the i18n:msg directive.''',
     test_suite='unittest',
     zip_safe=False,
     install_requires=['lxml'],
-    )
+)

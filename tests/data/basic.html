@@ -24,7 +24,7 @@
 <!--! Precedency tests -->
 
 <div py:choose="1">
-  <p py:when="1" py:for="x in xrange(3)" py:if="x == 2" py:choose="x" py:with="y=7">
+  <p py:when="1" py:for="x in range(3)" py:if="x == 2" py:choose="x" py:with="y=7">
     <span py:when="2">
       $y $x Hello!
       $$ $$x $$1 $1
@@ -70,8 +70,8 @@ http://genshi.edgewall.org/ticket/436 -->
 
 <!--! for in for test -->
 <table>
-  <tr py:for="y in xrange(2, 3)">
-    <td py:for="x in xrange(16)" py:content="unichr(16 * y + x)" />
+  <tr py:for="y in range(2, 3)">
+    <td py:for="x in range(16)" py:content="chr(16 * y + x)" />
   </tr>
 </table>
 
@@ -263,9 +263,9 @@ ${fn1(1)}
 <!-- py:attrs -->
 <div>
   <div id="div1" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}">Hello</div>
-  <div id="div1" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}"> </div>
-  <div id="div1" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}"></div>
-  <div id="div1" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}" />
+  <div id="div2" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}"> </div>
+  <div id="div3" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}"></div>
+  <div id="div4" py:attrs="{'class': 'div1class', 'onclick': 'return false;'}" />
 </div>
 
 <!-- py:content -->

@@ -8,11 +8,9 @@ Provides all the constants at one single place.
 
 """
 
-import os, re, htmlentitydefs, itertools
-
-import lxml
-from lxml import etree
-
+import os
+import re
+from html import entities
 
 # Debugging inside Wing IDE
 DEBUGGING = 'WINGDB_PYTHON' in os.environ
@@ -53,10 +51,10 @@ RX_LEFT_RIGHT_WHITESPACE = re.compile(r'^(\s*)(.*?)(\s*)$', re.DOTALL)
 RX_WHITESPACE_HEAD_TAIL = re.compile(r'^(\s*)(.*?)(\s*)$', re.DOTALL)
 
 # Regular expression to match the element template in i18n:msg translations
-RX_I18N_MSG_ELEMENT = re.compile(ur'\[(\d+):(.*?)\]')
+RX_I18N_MSG_ELEMENT = re.compile(r'\[(\d+):(.*?)\]')
 
 # Regular expression to split the translated i18n:msg template at compile time
-RX_I18N_MSG_TEMPLATE_ITEM = re.compile(ur'%\(([a-z_0-9:]+)\)s', re.I)
+RX_I18N_MSG_TEMPLATE_ITEM = re.compile(r'%\(([a-z_0-9:]+)\)s', re.I)
 
 # XML namespace identifiers
 XML_NAMESPACE_GENSHI = 'http://genshi.edgewall.org/'
@@ -87,7 +85,7 @@ GENSHI_ELEMENTS = (
     'i18n:plural',
     'xi:include',
     'xi:fallback',
-    )
+)
 
 # Genshi attribute directives in reverse processing order, since we build up
 # the generated code bottom-up, e.g. from the deeper structure to the top level
@@ -110,7 +108,8 @@ GENSHI_ATTRIBUTES = (
     'py:match',
     'i18n:domain',
     'py:def',
-    )
+)
+
 
 # Genshi elements and attributes with full URL prefixes
 # FIXME: It could be written faster, but it is at least readable this way.
@@ -121,30 +120,31 @@ def xml_namespace_prefix_to_url(name):
     """
     if name.startswith('py:'):
         return '{%s}%s' % (XML_NAMESPACE_GENSHI, name[3:])
-    
+
     if name.startswith('xi:'):
         return '{%s}%s' % (XML_NAMESPACE_XINCLUDE, name[3:])
-    
+
     if name.startswith('i18n:'):
         return '{%s}%s' % (XML_NAMESPACE_I18N, name[5:])
-    
+
     return name
 
+
 GENSHI_ELEMENTS_WITH_URL = tuple(
-    itertools.imap(xml_namespace_prefix_to_url, GENSHI_ELEMENTS))
+    map(xml_namespace_prefix_to_url, GENSHI_ELEMENTS))
 
 GENSHI_ATTRIBUTES_WITH_URL = tuple(
-    itertools.imap(xml_namespace_prefix_to_url, GENSHI_ATTRIBUTES))
+    map(xml_namespace_prefix_to_url, GENSHI_ATTRIBUTES))
 
 del xml_namespace_prefix_to_url
 
 # HTML entities as a DTD
 DOCTYPE_AND_HTML_ENTITIES = (
-    '<!DOCTYPE html [' +
-    ''.join(
-        '<!ENTITY %s "&#%d;">' % (name, value)
-        for name, value in htmlentitydefs.name2codepoint.items()) +
-    ']>')
+        '<!DOCTYPE html [' +
+        ''.join(
+            '<!ENTITY %s "&#%d;">' % (name, value)
+            for name, value in entities.name2codepoint.items()) +
+        ']>')
 
 # HTML elements can be written in short form without a end tag
 # See also: http://www.w3.org/TR/xhtml1/#guidelines
@@ -162,7 +162,7 @@ SHORT_HTML_ELEMENTS = (
     'basefont',
     'isindex',
     'frame',
-    )
+)
 SHORT_HTML_ELEMENTS_SET = frozenset(SHORT_HTML_ELEMENTS)
 
 # FIXME: This is not used, currently.
@@ -187,19 +187,19 @@ SHORT_HTML_ELEMENTS_SET = frozenset(SHORT_HTML_ELEMENTS)
 # Default list of XHTML 1.1 elements with translatable contents
 XHTML_ELEMENTS_TO_TRANSLATE = (
     'a',
-    'caption', 
-    'dd', 
-    'dt', 
-    'label', 
-    'legend', 
-    'li', 
-    'option', 
-    'p', 
-    'rb', 
-    'rp', 
-    'rt', 
-    'td', 
-    'th', 
+    'caption',
+    'dd',
+    'dt',
+    'label',
+    'legend',
+    'li',
+    'option',
+    'p',
+    'rb',
+    'rp',
+    'rt',
+    'td',
+    'th',
     'title',
     'span',
     'div',
@@ -209,30 +209,30 @@ XHTML_ELEMENTS_TO_TRANSLATE = (
     'h4',
     'h5',
     'h6',
-    )
+)
 
 # Default list of XHTML 1.1 attributes with translatable value
 # FIXME: It does not consider the value attribute of input buttons for translation!
 XHTML_ATTRIBUTES_TO_TRANSLATE = (
-    'abbr', 
-    'alt', 
-    'label', 
-    'prompt', 
-    'standby', 
-    'summary', 
+    'abbr',
+    'alt',
+    'label',
+    'prompt',
+    'standby',
+    'summary',
     'title',
-    )
+)
 
 # Additional entities for escaping XML, it is for use with xml.sax.saxutils.escape
 # NOTE: These are above the core set of &amp; &lt; &gt; entities.
 EXTRA_ESCAPE_XML_ENTITIES = {
     "'": '&apos;',
     '"': '&quot;',
-    }
+}
 
 # Additional entities for unescaping XML, it is for use with xml.sax.saxutils.unescape
 # NOTE: These are above the core set of &amp; &lt; &gt; entities.
 EXTRA_UNESCAPE_XML_ENTITIES = {
     '&apos;': "'",
     '&quot;': '"',
-    }
+}

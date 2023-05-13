@@ -26,5 +26,5 @@ syntax: regexp
 
 # Generated test files
 ^tests/data/output/.*\.html$
-^tests/data/generated_source/[a-z]\w+.py$
+^tests/data/generated_source/[a-z]\w+\.py$
 ^benchmarks/.*?\.pyx$

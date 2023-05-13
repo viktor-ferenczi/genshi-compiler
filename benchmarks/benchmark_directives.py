@@ -22,8 +22,7 @@ except ImportError:
 import genshi
 import genshi.template
 
-import genshi_compiler
-from genshi_compiler import util, html_minimizer, python_xml_template_compiler
+from genshi_compiler import python_xml_template_compiler
 
 import benchmark
 
@@ -36,16 +35,16 @@ def main(template_basename='basic',
          arguments="count=10, text='default text', type=int, object=(1, 2, 3), empty=None",
          template_parameters={},
          translator=None):
-    print 'Benchmarking unit test template: %s' % template_basename
-    
+    print('Benchmarking unit test template: %s' % template_basename)
+
     # Properties of the test template
     template_filename = '%s.html' % template_basename
     template_filepath = os.path.join(TEST_DATA_DIR, template_filename)
     
     # Load the template from the tests
-    with open(template_filepath, 'rt') as template_file:
+    with open(template_filepath, 'rt', encoding='utf-8') as template_file:
         template_xml = template_file.read()
-    assert template_xml.decode('utf8')
+    assert template_xml
     
     # Parameters to pass to the compiled template
     render_parameters = eval('dict(%s)' % arguments)
@@ -53,7 +52,7 @@ def main(template_basename='basic',
 
     # Empty renderer to substract
     def empty_renderer(**kws):
-        return u''
+        return ''
     def no_operation():
         local_var = empty_renderer(**render_parameters)
     
@@ -65,7 +64,8 @@ def main(template_basename='basic',
     module_source = compiler.compile(arguments)
     module_source = module_source.rstrip() + '\n'
     module = types.ModuleType(template_basename)
-    exec module_source in module.__dict__
+    exec(module_source, module.__dict__)
+
     def render_compiled():
         compiled_output = module.render(**render_parameters)
         
@@ -74,6 +74,7 @@ def main(template_basename='basic',
         template_xml,
         filepath=template_filepath,
         filename=template_filename)
+
     def render_genshi():
         token_stream = genshi_template.generate(**render_parameters)
         genshi_output = token_stream.render(method='xml', encoding=None)
@@ -84,8 +85,8 @@ def main(template_basename='basic',
             render_genshi, 
             0.1, 
             no_operation=no_operation)
-        for n in xrange(10))
-    print 'Genshi: %.3f ms' % (genshi_time * 1000)
+        for n in range(10))
+    print('Genshi: %.3f ms' % (genshi_time * 1000))
 
     # Time compiled template rendering
     compiled_time = min(
@@ -93,8 +94,8 @@ def main(template_basename='basic',
             render_compiled, 
             0.1, 
             no_operation=no_operation) 
-        for n in xrange(10))
-    print 'Compiled: %.3f ms' % (compiled_time * 1000)
+        for n in range(10))
+    print('Compiled: %.3f ms' % (compiled_time * 1000))
 
     # Time the Cython compiled version if Cython is available
     if cython:
@@ -117,11 +118,12 @@ def main(template_basename='basic',
                 render_cython_compiled, 
                 0.1, 
                 no_operation=no_operation) 
-            for n in xrange(10))
-        print 'Cython compiled: %.3f ms' % (cython_compiled_time * 1000)
-        
-    print
-    
+            for n in range(10))
+        print('Cython compiled: %.3f ms' % (cython_compiled_time * 1000))
+
+    print()
+
+
 if __name__ == '__main__':
     
     main(

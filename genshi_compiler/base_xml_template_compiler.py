@@ -8,10 +8,9 @@ Provides the base class for the XML template compilers implementing all the
 common logic and functionality.
 
 """
-
+import io
 import os, itertools
 
-import lxml
 from lxml import etree
 
 import constants, util, base_blocks
@@ -82,8 +81,8 @@ class BaseXMLTemplateCompiler(object):
         
         # Language translation
         self.translator = None
-        self.translator_ugettext = None
-        self.translator_ungettext = None
+        self.translator_gettext = None
+        self.translator_ngettext = None
         self.translatable_elements = None
         self.translatable_attributes = None
         self.translatable_element_set = set()
@@ -149,7 +148,7 @@ class BaseXMLTemplateCompiler(object):
         
         # Determine the default template file name if possible
         if (not template_filename and
-            not isinstance(template_source, basestring) and
+            not isinstance(template_source, str) and
             hasattr(template_source, 'name')):
             
             # Take the file name from the file object
@@ -167,7 +166,7 @@ class BaseXMLTemplateCompiler(object):
         self.template_encoding = template_encoding
         
         # Load the template from a file object if needed
-        if not isinstance(template_source, basestring):
+        if not isinstance(template_source, str):
             template_source = template_source.read()
 
         if constants.GENERATE_DEBUG_COMMENTS:
@@ -203,7 +202,7 @@ class BaseXMLTemplateCompiler(object):
         # namespace declarations of the template loaded
         self.namespace_map = dict(
             (url, prefix)
-            for prefix, url in self.template.nsmap.iteritems()
+            for prefix, url in self.template.nsmap.items()
             if url not in constants.XML_NAMESPACES_PROCESSED)
         
     def cleanup(self):
@@ -214,8 +213,8 @@ class BaseXMLTemplateCompiler(object):
         self.template_identifier = ''
         self.template = None
         self.translator = None
-        self.translator_ugettext = None
-        self.translator_ungettext = None
+        self.translator_gettext = None
+        self.translator_ngettext = None
         self.translatable_element_set.clear()
         self.translatable_attribute_set.clear()
         self.namespace_map.clear()
@@ -329,8 +328,8 @@ class BaseXMLTemplateCompiler(object):
         if self.translator:
 
             # Extract translator functions
-            self.translator_ugettext = self.translator.ugettext
-            self.translator_ungettext = self.translator.ungettext
+            self.translator_gettext = self.translator.gettext
+            self.translator_ngettext = self.translator.ngettext
             
             # Defaults
             if output_standard == 'xhtml':
@@ -381,18 +380,18 @@ class BaseXMLTemplateCompiler(object):
 
         if constants.PRINT_POSTPROCESSING_DIFFERENCE:
             after_postprocessing_dump = self.module_block.pretty_format()
-            print 'Postprocessing difference:'
-            print
+            print('Postprocessing difference:')
+            print()
             if before_postprocessing_dump == after_postprocessing_dump:
-                print 'No difference.'
+                print('No difference.')
             else:
                 util.print_diff(
                     before_postprocessing_dump,
                     after_postprocessing_dump,
                     'Before postprocessing',
                     'After postprocessing')
-            print
-        
+            print()
+
         self.dump_block_tree(
             self.module_block,
             constants.DUMP_BLOCK_TREE_AFTER_POSTPROCESSING,
@@ -415,30 +414,30 @@ class BaseXMLTemplateCompiler(object):
         
             if constants.PRINT_OPTIMIZATION_DIFFERENCE:
                 after_optimization_dump = self.module_block.pretty_format()
-                print 'Optimization difference:'
-                print
+                print('Optimization difference:')
+                print()
                 if before_optimization_dump == after_optimization_dump:
-                    print 'No difference.'
+                    print('No difference.')
                 else:
                     util.print_diff(
                         before_optimization_dump,
                         after_optimization_dump,
                         'Before optimization',
                         'After optimization')
-                print
+                print()
         
         # Recursively format the hierarchy of blocks into actual source code lines
         lines = self.module_block.format()
         if constants.DEBUGGING:
             for item in lines:
                 depth, code = item
-                assert isinstance(depth, (int, long))
+                assert isinstance(depth, int)
                 assert depth >= 0
                 assert isinstance(code, str)
                 
         # Reduce duplicate empty lines
         if len(lines) > 1:
-            for index in xrange(len(lines) - 1, 0, -1):
+            for index in range(len(lines) - 1, 0, -1):
                 if lines[index - 1][1].strip() or lines[index][1].strip():
                     continue
                 del lines[index]
@@ -513,7 +512,7 @@ class BaseXMLTemplateCompiler(object):
             
         else:
             # Element, including Genshi directives
-            assert isinstance(element.tag, basestring), 'Unknown element: %r' % element
+            assert isinstance(element.tag, str), 'Unknown element: %r' % element
             
             # Is this element i18n translatable?
             lc_tagname_with_namespace_prefix = (
@@ -612,13 +611,13 @@ class BaseXMLTemplateCompiler(object):
         # Start tag, namespace declarations, attributes from to the template
         start_tag = blocks_module.OpeningTagBlock(lineno, lc_tag_name)
         element_block.start_tag=start_tag
-        start_tag.append(blocks_module.MarkupBlock(lineno, u'<%s' % tag_name))
+        start_tag.append(blocks_module.MarkupBlock(lineno, '<%s' % tag_name))
         
         # Namespace declarations
         if namespace_map:
             for namespace_url, namespace_prefix in sorted(namespace_map.items()):
-                xmlns_attribute_markup = u' xmlns%s="%s"' % (
-                    u':%s' % namespace_prefix if namespace_prefix else u'',
+                xmlns_attribute_markup = ' xmlns%s="%s"' % (
+                    ':%s' % namespace_prefix if namespace_prefix else '',
                     escape_attribute(namespace_url))
                 start_tag.append(blocks_module.MarkupBlock(lineno, xmlns_attribute_markup))
                 
@@ -631,7 +630,7 @@ class BaseXMLTemplateCompiler(object):
             start_tag.append(
                 blocks_module.MarkupBlock(
                     lineno,
-                    u' %s="' % attribute_name_with_namespace_prefix))
+                    ' %s="' % attribute_name_with_namespace_prefix))
             
             # Create block to generate the attribute's value
             attribute_value_block = self.blocks_module.AttributeValueBlock(
@@ -652,14 +651,14 @@ class BaseXMLTemplateCompiler(object):
             
             # Close the attribute
             start_tag.append(attribute_value_block)
-            start_tag.append(blocks_module.MarkupBlock(lineno, u'"'))
+            start_tag.append(blocks_module.MarkupBlock(lineno, '"'))
             
         # NOTE: Start tags are closed only later in the postprocessing step.
         
         # End tag
         end_tag = blocks_module.ClosingTagBlock(lineno, lc_tag_name)
         element_block.end_tag = end_tag
-        end_tag.append(blocks_module.MarkupBlock(lineno, u'</%s>' % tag_name))
+        end_tag.append(blocks_module.MarkupBlock(lineno, '</%s>' % tag_name))
         
         # NOTE: Short tags are introduced later by the postprocessing step.
         
@@ -714,7 +713,7 @@ class BaseXMLTemplateCompiler(object):
     def translate_i18n_choose(self, element):
         assert 'numeral' in element.attrib, 'Missing numeral attribute of element: %s' % element
         element.attrib['{%s}choose' % constants.XML_NAMESPACE_I18N] = (
-            u'%s; %s' % (element.attrib.pop('numeral'), element.attrib.pop('params', '')))
+            '%s; %s' % (element.attrib.pop('numeral'), element.attrib.pop('params', '')))
         
     def translate_i18n_singular(self, element):
         element.attrib['{%s}singular' % constants.XML_NAMESPACE_I18N] = ''
@@ -939,13 +938,6 @@ class BaseXMLTemplateCompiler(object):
         if 0:
             assert isinstance(block, base_blocks.BaseBlock)
             
-        # The expression must be ASCII
-        # FIXME: This limitation should be lifted eventually, since 
-        #        variable names can include non-ASCII characters in Python.
-        #        We enforce this now since the generated source code is ASCII.
-        if isinstance(attribute_value, unicode):
-            attribute_value = attribute_value.encode('ascii')
-        
         # Replace the element with the result of the given runtime expression
         replace_block = self.blocks_module.TextExpressionBlock(lineno, attribute_value)
         
@@ -961,13 +953,6 @@ class BaseXMLTemplateCompiler(object):
         if 0:
             assert isinstance(block, base_blocks.BaseBlock)
             
-        # The expression must be ASCII
-        # FIXME: This limitation should be lifted eventually, since 
-        #        variable names can include non-ASCII characters in Python.
-        #        We enforce this now since the generated source code is ASCII.
-        if isinstance(attribute_value, unicode):
-            attribute_value = attribute_value.encode('ascii')
-        
         # Replace children with the result of the given runtime expression
         content_block = self.blocks_module.TextExpressionBlock(lineno, attribute_value)
         block.clear()
@@ -1096,20 +1081,20 @@ class BaseXMLTemplateCompiler(object):
         # markers. The translation can change the position of expressions,
         # but can't change the hierarchy of elements.
         if self.translator:
-            translated_string_template = self.translator_ugettext(string_template)
+            translated_string_template = self.translator_gettext(string_template)
         else:
             translated_string_template = string_template
         
         # Replace the element markers in the string template with more usable ones
         while 1:
-            translated_string_template, count = constants.RX_I18N_MSG_ELEMENT.subn(ur'%(start:\1)s\2%(end:\1)s', translated_string_template)
+            translated_string_template, count = constants.RX_I18N_MSG_ELEMENT.subn(r'%(start:\1)s\2%(end:\1)s', translated_string_template)
             if not count:
                 break
             
         # Construct output based on the translated string template
         string_template_item_list = constants.RX_I18N_MSG_TEMPLATE_ITEM.split(translated_string_template)
         string_template_item_iter = iter(string_template_item_list)
-        block_list = [blocks_module.TextBlock(lineno, string_template_item_iter.next())]
+        block_list = [blocks_module.TextBlock(lineno, next(string_template_item_iter))]
         for item_identifier, text_fragment in itertools.izip(string_template_item_iter, string_template_item_iter):
             if ':' in item_identifier:
                 element_number = int(item_identifier.split(':')[1])
@@ -1128,7 +1113,7 @@ class BaseXMLTemplateCompiler(object):
                     # correctly adding the ending > character here. Short tags
                     # should not be used for translated elements, so it is okay
                     # this way for now.
-                    block_list.append(blocks_module.MarkupBlock(element_block.lineno, u'>'))
+                    block_list.append(blocks_module.MarkupBlock(element_block.lineno, '>'))
                 elif item_identifier.startswith('end:'):
                     block_list.append(element_block.end_tag)
             else:
@@ -1168,7 +1153,7 @@ class BaseXMLTemplateCompiler(object):
         if 'parameter_name' in block.__slots__:
             # Assign parameter names to template expressions
             try:
-                block.parameter_name = iter_parameters.next()
+                block.parameter_name = next(iter_parameters)
             except StopIteration:
                 raise ValueError(
                     'No parameter name defined for one or more expression '
@@ -1177,7 +1162,7 @@ class BaseXMLTemplateCompiler(object):
         
         elif 'element_number' in block.__slots__:
             # Assign integer serial numbers to the elements
-            block.element_number = iter_element_numbers.next()
+            block.element_number = next(iter_element_numbers)
             element_map[block.element_number] = block
             
         block.apply_transformation(self.transform_i18n_msg_block, iter_element_numbers, iter_parameters, element_map, parameter_map)
@@ -1225,14 +1210,14 @@ class BaseXMLTemplateCompiler(object):
             if translatable and first_fragment.strip():
                 # Translate text at compile time, but only without the surrounding whitespace
                 left_whitespace, stripped_text, right_whitespace = util.separate_whitespace(first_fragment)
-                stripped_text = self.translator_ugettext(stripped_text)
+                stripped_text = self.translator_gettext(stripped_text)
                 first_fragment = left_whitespace + stripped_text + right_whitespace
             fragment_block = block_class(lineno, first_fragment)
             fragment_block.attribute = attribute
             block.append(fragment_block)
         
         # Append each template expression and their trailing text blocks
-        for i in xrange(1, len(fragment_list), 4):
+        for i in range(1, len(fragment_list), 4):
             
             expression1, expression2, expression3, fragment = fragment_list[i: i + 4]
             expression = expression1 or expression2 or expression3
@@ -1245,7 +1230,7 @@ class BaseXMLTemplateCompiler(object):
                 if translatable and fragment.strip():
                     # Translate text at compile time, but only without the surrounding whitespace
                     left_whitespace, stripped_text, right_whitespace = util.separate_whitespace(fragment)
-                    stripped_text = self.translator_ugettext(stripped_text)
+                    stripped_text = self.translator_gettext(stripped_text)
                     fragment = left_whitespace + stripped_text + right_whitespace
                 fragment_block = block_class(lineno, fragment)
                 fragment_block.attribute = attribute
@@ -1267,13 +1252,6 @@ class BaseXMLTemplateCompiler(object):
         """
         expression = expression.strip()
         assert expression, 'Empty template expression'
-        
-        # The expression must be ASCII
-        # FIXME: This limitation should be lifted eventually, since 
-        #        variable names can include non-ASCII characters in Python.
-        #        We enforce this now since the generated source code is ASCII.
-        if isinstance(expression, unicode):
-            expression = expression.encode('ascii')
         
         # NOTE: Markup() expressions will be translated to
         #       MarkupExpressionBlock by the postprocessor.
@@ -1359,12 +1337,12 @@ class BaseXMLTemplateCompiler(object):
                     
                     # Close start tag
                     block.start_tag.append(
-                        self.blocks_module.MarkupBlock(block.lineno, u'>'))
+                        self.blocks_module.MarkupBlock(block.lineno, '>'))
                     
                 else:
                     # Shorten the element
                     block.start_tag.append(
-                        self.blocks_module.MarkupBlock(block.lineno, u' />'))
+                        self.blocks_module.MarkupBlock(block.lineno, ' />'))
                     block.end_tag = None
                     
         return [block]
@@ -1463,7 +1441,7 @@ class BaseXMLTemplateCompiler(object):
         children = block.children
         if len(children) > 1:
             
-            for index in xrange(len(children) - 1, 0, -1):
+            for index in range(len(children) - 1, 0, -1):
                 
                 first_block = children[index - 1]
                 second_block = children[index]
@@ -1537,15 +1515,15 @@ class BaseXMLTemplateCompiler(object):
         
         dump = block.pretty_format()
         
-        if isinstance(output, file):
+        if isinstance(output, io.IOBase):
             output.write(dump)
-            
-        elif isinstance(output, basestring):
+
+        elif isinstance(output, str):
             with open(output, 'wt') as output_file:
                 output_file.write(dump)
-                
+
         else:
-            print description
-            print
-            print dump
-            print
+            print(description)
+            print()
+            print(dump)
+            print()

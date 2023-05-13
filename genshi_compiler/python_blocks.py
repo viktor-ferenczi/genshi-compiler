@@ -21,7 +21,6 @@ class ModuleBlock(base_blocks.ModuleBlock):
     # Header of the generated Python modules
     header_template = '''\
 #!/usr/bin/python
-# -*- coding: ascii -*-
 
 """ Generated template rendering code
 
@@ -39,8 +38,8 @@ Then don't forget to regenerate this module.
 import xml.sax.saxutils
 
 
-# Converts any object to unicode
-_x_to_text = unicode
+# Converts any object to string
+_x_to_text = str
 
 # XML escaping text
 _x_escape_text = xml.sax.saxutils.escape
@@ -55,7 +54,7 @@ def _x_format_attributes(_x_append_markup, attributes):
     """
     global _x_escape_attribute
 
-    for attribute_name, attribute_value in attributes.iteritems():
+    for attribute_name, attribute_value in attributes.items():
         if attribute_value is not None:
             _x_append_markup(' %%s="%%s"' %% (
                 attribute_name, _x_escape_attribute(attribute_value)))
@@ -80,13 +79,13 @@ _x_append_markup = _x_markup_fragments.append
     # Function body footer
     footer_template = '''\
 
-_x_html = u''.join(_x_markup_fragments)
+_x_html = ''.join(_x_markup_fragments)
 return _x_html
 '''
     
     # Empty function
     empty_body_template = '''\
-return u''
+return ''
 '''
     
     def format(self, depth=0):
@@ -156,7 +155,7 @@ class SwitchBlock(base_blocks.SwitchBlock):
         lines = []
 
         if expression:
-            index = counter.next()
+            index = next(counter)
             variable_name = '_x_switch_%d' % index
             lines.append((depth, '%s = %s' % (variable_name, expression)))
         
@@ -192,7 +191,7 @@ class WithBlock(base_blocks.WithBlock):
     __slots__ = base_blocks.WithBlock.__slots__
     
     def format(self, depth=0, counter=itertools.count()):
-        index = counter.next()
+        index = next(counter)
         function_name = '_x_with_%d' % index
         
         lines = (
@@ -220,7 +219,7 @@ class ElementBlock(base_blocks.ElementBlock):
             #       static truth values here, only expressions have to be
             #       evaluated at runtime.
             if self.strip_expression:
-                index = counter.next()
+                index = next(counter)
                 variable_name = '_x_keep_%d' % index
                 lines.append((depth, '%s = not (%s)' % (variable_name, self.strip_expression)))
                 lines.append((depth, 'if %s:' % variable_name))

@@ -15,7 +15,6 @@ sections are kept intact.
 
 __all__ = ['minimize']
 
-import lxml
 from lxml import etree
 
 import constants
@@ -24,18 +23,19 @@ import constants
 def minimize_text(text):
     if not text:
         return text
-    
+
     if text.strip():
         if text != text.lstrip():
             text = ' ' + text.lstrip()
         if text != text.rstrip():
             text = text.rstrip() + ' '
         return text
-            
+
     if '\n' in text:
         return '\n'
-    
+
     return ' '
+
 
 def minimize_element(element):
     element.text = minimize_text(element.text)
@@ -43,12 +43,13 @@ def minimize_element(element):
     for child in element.getchildren():
         minimize_element(child)
 
+
 def minimize(html):
     """ Minimizes HTML by reducing all duplicate whitespace and newlines
     
     Accepts only valid XML markup, since this function is parsing the document.
     This function might modify the location of XML namespace declarations, but
-    the still remain valid. Comments, processing instructions and CDATA
+    they still remain valid. Comments, processing instructions and CDATA
     sections are kept intact.
     
     """

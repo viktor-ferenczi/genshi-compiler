@@ -165,9 +165,9 @@ def print_diff(a_text, b_text, a_label, b_label):
         b_text += '\n'
 
     # Determine and print unified diff
-    print ''.join(
+    print(''.join(
         difflib.unified_diff(
             a_text.splitlines(1),
             b_text.splitlines(1),
             a_label,
-            b_label))
+            b_label)))

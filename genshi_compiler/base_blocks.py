@@ -171,7 +171,7 @@ class BaseBlock(object):
         return False
 
     def get_i18n_text(self):
-        return u''.join(child.get_i18n_text() for child in self.children)
+        return ''.join(child.get_i18n_text() for child in self.children)
     
     ### Overridables
     
@@ -351,7 +351,7 @@ class BaseCodeBlock(BaseBlock):
         return False
     
     def get_i18n_text(self):
-        return u''
+        return ''
 
     def format(self, depth=0):
         raise NotImplementedError('Override this method!')
@@ -625,7 +625,7 @@ class ElementBlock(BaseBlock):
     
     def get_i18n_text(self):
         children_i18n_text = BaseBlock.get_i18n_text(self)
-        return u'[%d:%s]' % (self.element_number, children_i18n_text)
+        return '[%d:%s]' % (self.element_number, children_i18n_text)
     
     if constants.DETECT_RECURSION:
         
@@ -744,7 +744,7 @@ class TranslatableExpressionBlock(ExpressionBlock):
         self.parameter_name = parameter_name
     
     def get_i18n_text(self):
-        return u'%%(%s)s' % self.parameter_name
+        return '%%(%s)s' % self.parameter_name
     
 class MarkupExpressionBlock(TranslatableExpressionBlock):
     """ Code block emitting the result of a runtime evaluated expression

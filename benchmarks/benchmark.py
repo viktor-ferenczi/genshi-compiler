@@ -75,6 +75,6 @@ def benchmark(function,
 
 
 if __name__ == '__main__':
-    print 'No operation: %.3f us (should be 0.001)' % (benchmark(lambda: None) * 1000000)
-    print 'Convert to int: %.3f us' % (benchmark(lambda: int('123')) * 1000000)
-    print 'Convert to bool: %.3f us' % (benchmark(lambda: bool('123')) * 1000000)
+    print('No operation: %.3f us (should be 0.001)' % (benchmark(lambda: None) * 1000000))
+    print('Convert to int: %.3f us' % (benchmark(lambda: int('123')) * 1000000))
+    print('Convert to bool: %.3f us' % (benchmark(lambda: bool('123')) * 1000000))
